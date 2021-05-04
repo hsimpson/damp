@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  php-apache:
+    build:
+      context: "."
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+    restart: always
+    ports:
+      - 443:443
+    volumes:
+      # - ../:/var/www/html
+      - ${DOCUMENTROOT}:/var/www/html
+    networks:
+      - backend
+
+  mariadb:
+    image: mariadb:${MARIADB_VERSION}
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      TZ: "Europe/Rome"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
+      MYSQL_USER: "${MARIADB_USERNAME}"
+      MYSQL_PASSWORD: "${MARIADB_PASSWORD}"
+      # MYSQL_DATABASE: "testdb"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    ports:
+      - "8080:80"
+    networks:
+      - backend
+
+volumes:
+  mariadb:
+
+networks:
+  backend:
