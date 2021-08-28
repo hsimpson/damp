@@ -16,6 +16,7 @@ services:
 
   mariadb:
     image: mariadb:${MARIADB_VERSION}
+    restart: always
     ports:
       - 3306:3306
     volumes:
